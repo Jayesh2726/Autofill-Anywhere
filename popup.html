@@ -1,65 +1,133 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Autofill Anywhere</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="popup.css">
 </head>
+
 <body class="bg-light" style="min-width:400px;">
 
-  <div class="card">
-    <h1>Autofill Anywhere</h1>
-    <form id="profileForm">
-      <div class="form-group">
-        <label for="name">Full name</label>
-        <input type="text" id="name" placeholder="John Doe">
-      </div>
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" placeholder="john@example.com">
-      </div>
-      <div class="form-group">
-        <label for="phone">Phone</label>
-        <input type="tel" id="phone" placeholder="+1 555 555 5555">
-      </div>
-      <div class="form-group">
-        <label for="address">Address</label>
-        <input type="text" id="address" placeholder="123 Main St">
-      </div>
-      <div class="form-group">
-        <label for="city">City</label>
-        <input type="text" id="city" placeholder="City">
-      </div>
-      <div class="form-group">
-        <label for="state">State</label>
-        <input type="text" id="state" placeholder="State">
-      </div>
-      <div class="form-group">
-        <label for="zip">ZIP</label>
-        <input type="text" id="zip" placeholder="Postal / ZIP">
-      </div>
-      <div class="form-group">
-        <label for="country">Country</label>
-        <input type="text" id="country" placeholder="Country">
-      </div>
-      <div class="form-group">
-        <label for="company">Company</label>
-        <input type="text" id="company" placeholder="Company">
+  <div class="card shadow-sm p-3">
+
+    <h4 class="text-center text-primary fw-bold mb-3">
+      Autofill Anywhere
+    </h4>
+
+    <!-- Tabs -->
+    <div class="d-flex mb-3">
+      <button class="btn btn-primary w-50 me-1" id="personalTab">Personal</button>
+      <button class="btn btn-outline-primary w-50 ms-1" id="educationTab">Education</button>
+    </div>
+
+    <!-- ================= PERSONAL PAGE ================= -->
+    <div id="personalPage">
+      <form id="profileForm">
+
+        <div class="mb-2">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="name" class="form-control" placeholder="John Doe">
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Email</label>
+          <input type="email" id="email" class="form-control" placeholder="john@example.com">
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Phone</label>
+          <input type="tel" id="phone" class="form-control" placeholder="+91 9876543210">
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Address</label>
+          <input type="text" id="address" class="form-control" placeholder="123 Main Street">
+        </div>
+
+        <div class="row">
+          <div class="col-6 mb-2">
+            <label class="form-label">City</label>
+            <input type="text" id="city" class="form-control">
+          </div>
+          <div class="col-6 mb-2">
+            <label class="form-label">State</label>
+            <input type="text" id="state" class="form-control">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-6 mb-2">
+            <label class="form-label">ZIP</label>
+            <input type="text" id="zip" class="form-control">
+          </div>
+          <div class="col-6 mb-2">
+            <label class="form-label">Country</label>
+            <input type="text" id="country" class="form-control">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Company</label>
+          <input type="text" id="company" class="form-control">
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="button" id="saveBtn" class="btn btn-primary">💾 Save</button>
+          <button type="button" id="clearBtn" class="btn btn-outline-danger">🗑 Clear</button>
+          <button type="button" id="autofillBtn" class="btn btn-success">⚡ Autofill</button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- ================= EDUCATION PAGE ================= -->
+    <div id="educationPage" style="display:none;">
+
+      <h6 class="fw-bold text-primary mb-2">
+        Educational Qualifications
+      </h6>
+
+      <div class="mb-2">
+        <input class="form-control mb-2" id="level" placeholder="Level (SSC / HSC / UG / PG)">
+        <input class="form-control mb-2" id="institute" placeholder="Institute Name">
+        <input class="form-control mb-2" id="degree" placeholder="Degree">
+        <input class="form-control mb-2" id="specialization" placeholder="Specialization">
+        <input class="form-control mb-2" id="percentage" placeholder="Percentage / CGPA">
+
+        <div class="row">
+          <div class="col-6">
+            <input class="form-control" id="fromPeriod" placeholder="From Year">
+          </div>
+          <div class="col-6">
+            <input class="form-control" id="toPeriod" placeholder="To Year">
+          </div>
+        </div>
       </div>
 
-      <div class="buttons">
-        <button type="button" id="saveBtn" class="primary">💾 Save</button>
-        <button type="button" id="clearBtn" class="secondary">🗑 Clear</button>
-        <button type="button" id="autofillBtn" class="success">⚡ Autofill</button>
-      </div>
-    </form>
+      <button class="btn btn-success w-100 mt-2" id="addEducation">
+        ➕ Add Education
+      </button>
 
-    <p id="status"></p>
+      <hr>
 
-    <footer>
-      <small>Future Features: multiple profiles, encryption, keyboard shortcuts</small>
+      <div id="educationList" class="small"></div>
+    </div>
+
+    <!-- Status -->
+    <p id="status" class="text-center text-success small mt-2"></p>
+
+    <footer class="text-center mt-2">
+      <small class="text-muted">
+        Future: Profiles • Encryption • Keyboard Shortcuts
+      </small>
     </footer>
+
   </div>
 
   <script src="popup.js"></script>

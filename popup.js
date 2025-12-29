@@ -59,3 +59,24 @@ $('autofillBtn').addEventListener('click', async () => {
     });
   });
 });
+
+
+const personalTab = document.getElementById("personalTab");
+const educationTab = document.getElementById("educationTab");
+
+const personalPage = document.getElementById("personalPage");
+const educationPage = document.getElementById("educationPage");
+
+personalTab.addEventListener("click", () => {
+  personalPage.style.display = "block";
+  educationPage.style.display = "none";
+  personalTab.classList.replace("btn-outline-primary", "btn-primary");
+  educationTab.classList.replace("btn-primary", "btn-outline-primary");
+});
+
+educationTab.addEventListener("click", () => {
+  personalPage.style.display = "none";
+  educationPage.style.display = "block";
+  educationTab.classList.replace("btn-outline-primary", "btn-primary");
+  personalTab.classList.replace("btn-primary", "btn-outline-primary");
+});
