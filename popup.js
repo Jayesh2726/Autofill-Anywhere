@@ -1,82 +1,62 @@
-// Popup script: save profile to chrome.storage, send autofill message to content script
-const $ = id => document.getElementById(id);
-const fields = ['name','email','phone','address','city','state','zip','country','company'];
+let currentPage = 0;
 
-function showStatus(msg, ok=true){
-  const s = $('status');
-  s.textContent = msg;
-  s.style.color = ok ? 'green' : 'red';
-  setTimeout(()=> s.textContent = '', 3000);
+const pages = document.querySelectorAll(".page");
+const icons = document.querySelectorAll(".icon");
+const title = document.getElementById("title");
+
+const titles = ["Personal", "Education", "Experience", "Skills"];
+
+function showPage(index) {
+  pages.forEach(p => p.classList.remove("active"));
+  icons.forEach(i => i.classList.remove("active"));
+
+  pages[index].classList.add("active");
+  icons[index].classList.add("active");
+
+  title.textContent = titles[index];
 }
 
-// Load saved profile on open
-document.addEventListener('DOMContentLoaded', () => {
-  chrome.storage.sync.get('autofill_profile', (res) => {
-    if(res.autofill_profile){
-      const p = res.autofill_profile;
-      fields.forEach(f => { if(p[f]) $(f).value = p[f]; });
+document.getElementById("nextBtn").onclick = () => {
+  if (currentPage < pages.length - 1) {
+    currentPage++;
+    showPage(currentPage);
+  }
+};
+
+document.getElementById("prevBtn").onclick = () => {
+  if (currentPage > 0) {
+    currentPage--;
+    showPage(currentPage);
+  }
+};
+
+/* Sidebar click */
+icons.forEach((icon, i) => {
+  icon.onclick = () => {
+    currentPage = i;
+    showPage(i);
+  };
+});
+
+/* SAVE DATA */
+document.getElementById("saveBtn").onclick = () => {
+  chrome.storage.sync.set({
+    profile: {
+      name: name.value,
+      email: email.value,
+      phone: phone.value,
+      address: address.value
     }
   });
-});
+};
 
-// Save profile
-$('saveBtn').addEventListener('click', () => {
-  const profile = {};
-  fields.forEach(f => profile[f] = $(f).value || '');
-  chrome.storage.sync.set({autofill_profile: profile}, () => {
-    showStatus('Profile saved ✔');
+/* LOAD DATA */
+document.addEventListener("DOMContentLoaded", () => {
+  chrome.storage.sync.get(["profile"], res => {
+    if (!res.profile) return;
+    name.value = res.profile.name || "";
+    email.value = res.profile.email || "";
+    phone.value = res.profile.phone || "";
+    address.value = res.profile.address || "";
   });
-});
-
-// Clear saved profile (and inputs)
-$('clearBtn').addEventListener('click', () => {
-  chrome.storage.sync.remove('autofill_profile', () => {
-    fields.forEach(f => $(f).value='');
-    showStatus('Profile cleared');
-  });
-});
-
-// Send autofill command to active tab
-$('autofillBtn').addEventListener('click', async () => {
-  chrome.storage.sync.get('autofill_profile', async (res) => {
-    const profile = res.autofill_profile || {};
-    if(Object.keys(profile).length === 0){
-      showStatus('No profile saved', false);
-      return;
-    }
-    // get active tab
-    chrome.tabs.query({active:true,currentWindow:true}, (tabs) => {
-      if(!tabs || tabs.length === 0) { showStatus('No active tab', false); return; }
-      const tab = tabs[0];
-      chrome.tabs.sendMessage(tab.id, {action:'autofill', profile}, (resp) => {
-        if(chrome.runtime.lastError){
-          // likely the page didn't allow content script or no content script loaded
-          showStatus('Could not contact page. Try reloading the page.', false);
-        } else {
-          showStatus(resp && resp.result ? 'Autofilled ✔' : 'Nothing filled');
-        }
-      });
-    });
-  });
-});
-
-
-const personalTab = document.getElementById("personalTab");
-const educationTab = document.getElementById("educationTab");
-
-const personalPage = document.getElementById("personalPage");
-const educationPage = document.getElementById("educationPage");
-
-personalTab.addEventListener("click", () => {
-  personalPage.style.display = "block";
-  educationPage.style.display = "none";
-  personalTab.classList.replace("btn-outline-primary", "btn-primary");
-  educationTab.classList.replace("btn-primary", "btn-outline-primary");
-});
-
-educationTab.addEventListener("click", () => {
-  personalPage.style.display = "none";
-  educationPage.style.display = "block";
-  educationTab.classList.replace("btn-outline-primary", "btn-primary");
-  personalTab.classList.replace("btn-primary", "btn-outline-primary");
 });
